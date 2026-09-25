@@ -10,6 +10,7 @@ export interface ITask extends Document {
   status: TaskStatus;
   priority: TaskPriority;
   tags: string[];
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,8 +23,11 @@ const taskSchema = new Schema<ITask>(
     status: { type: String, enum: ["todo", "in-progress", "done"], default: "todo" },
     priority: { type: String, enum: ["low", "medium", "high"], default: "medium" },
     tags: { type: [String], default: [] },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
+
+taskSchema.index({ user: 1, status: 1, order: 1 });
 
 export default model<ITask>("Task", taskSchema);

@@ -14,6 +14,7 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   tags: string[];
+  order: number;
   createdAt: string;
 }
 

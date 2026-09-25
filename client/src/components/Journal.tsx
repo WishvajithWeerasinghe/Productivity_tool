@@ -26,7 +26,7 @@ export default function Journal() {
         Save entry
       </button>
 
-      <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
+      <div className="mt-4 space-y-3 max-h-64 overflow-y-auto scroll-thin">
         {entries.map((entry) => (
           <div key={entry._id} className="bg-slate-800 rounded-lg p-3 text-sm">
             <p className="text-slate-400 text-xs mb-1">

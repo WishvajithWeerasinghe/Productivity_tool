@@ -41,3 +41,40 @@ export function useDeleteTask() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 }
+
+/**
+ * Persists a full board rearrangement (drag between/within columns) in one
+ * request. Applies an optimistic update to the cache first so the UI never
+ * snaps or flickers while the request is in flight, then reconciles with
+ * the server's response.
+ */
+export function useReorderTasks() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (tasks: { id: string; status: string; order: number }[]) => {
+      const { data } = await api.patch<{ tasks: Task[] }>("/tasks/reorder", { tasks });
+      return data.tasks;
+    },
+    onMutate: async (updates) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previous = queryClient.getQueryData<Task[]>(["tasks"]);
+
+      if (previous) {
+        const updateMap = new Map(updates.map((u) => [u.id, u]));
+        const next = previous.map((t) => {
+          const u = updateMap.get(t._id);
+          return u ? { ...t, status: u.status as Task["status"], order: u.order } : t;
+        });
+        queryClient.setQueryData(["tasks"], next);
+      }
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["tasks"], context.previous);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+}
