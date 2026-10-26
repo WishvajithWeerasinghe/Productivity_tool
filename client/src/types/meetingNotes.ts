@@ -2,6 +2,7 @@ export interface MeetingNote {
   _id: string;
   title: string;
   meetingDate: string;
+  meetingTime?: string;
   department: string;
   participants: string[];
   meetingType: string;

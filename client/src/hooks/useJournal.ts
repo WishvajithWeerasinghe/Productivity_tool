@@ -15,8 +15,8 @@ export function useJournalEntries() {
 export function useCreateEntry() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (content: string) => {
-      const { data } = await api.post<{ entry: JournalEntry }>("/journal", { content });
+    mutationFn: async (payload: { content: string; date: string }) => {
+      const { data } = await api.post<{ entry: JournalEntry }>("/journal", payload);
       return data.entry;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["journal"] }),

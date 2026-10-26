@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:journal": "node --test tests/journalCalendar.test.cjs",
+    "test:playlist": "node --test tests/playlist.test.cjs",
+    "test:reminders": "node --test tests/reminders.test.cjs",
     "preview": "vite preview"
   },
   "dependencies": {

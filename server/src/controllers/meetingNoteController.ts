@@ -21,13 +21,16 @@ export async function createMeetingNote(req: AuthRequest, res: Response) {
     return res.status(400).json({ message: "A meeting note object is required" });
   }
 
-  const { title, meetingDate, department, participants, meetingType, notes } = req.body;
+  const { title, meetingDate, meetingTime, department, participants, meetingType, notes } = req.body;
 
   if (typeof title !== "string" || !title.trim()) {
     return res.status(400).json({ message: "title is required" });
   }
   if (!isValidDate(meetingDate)) {
     return res.status(400).json({ message: "meetingDate must be a valid YYYY-MM-DD date" });
+  }
+  if (meetingTime !== undefined && meetingTime !== "" && (typeof meetingTime !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(meetingTime))) {
+    return res.status(400).json({ message: "meetingTime must be a valid HH:mm time" });
   }
   if (department !== undefined && typeof department !== "string") {
     return res.status(400).json({ message: "department must be a string" });
@@ -49,6 +52,7 @@ export async function createMeetingNote(req: AuthRequest, res: Response) {
     user: req.userId,
     title,
     meetingDate,
+    meetingTime,
     department,
     participants,
     meetingType,
@@ -56,4 +60,21 @@ export async function createMeetingNote(req: AuthRequest, res: Response) {
   });
 
   res.status(201).json({ note });
+}
+
+export async function updateMeetingTime(req: AuthRequest, res: Response) {
+  const { meetingTime } = req.body ?? {};
+  if (typeof meetingTime !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(meetingTime)) {
+    return res.status(400).json({ message: "meetingTime must be a valid HH:mm time" });
+  }
+  if (!/^[a-f\d]{24}$/i.test(req.params.id)) {
+    return res.status(400).json({ message: "Invalid meeting ID" });
+  }
+  const note = await MeetingNote.findOneAndUpdate(
+    { _id: req.params.id, user: req.userId },
+    { $set: { meetingTime } },
+    { new: true, runValidators: true }
+  );
+  if (!note) return res.status(404).json({ message: "Meeting not found" });
+  res.json({ note });
 }

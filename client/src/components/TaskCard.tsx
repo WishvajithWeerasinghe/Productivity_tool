@@ -31,10 +31,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="bg-slate-800 rounded-lg p-3 cursor-grab active:cursor-grabbing hover:bg-slate-750 hover:ring-1 hover:ring-slate-600 transition-shadow"
+      className="cursor-grab rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md active:cursor-grabbing active:translate-y-0"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <p className="text-sm font-medium leading-snug">{task.title}</p>
+        <p className="text-sm font-semibold leading-snug text-slate-800">{task.title}</p>
         <span
           className={`shrink-0 text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded border ${PRIORITY_STYLES[task.priority]}`}
         >
@@ -43,7 +43,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
       </div>
 
       {task.description && (
-        <p className="text-xs text-slate-400 line-clamp-2 mb-2">{task.description}</p>
+        <p className="mb-2 line-clamp-2 text-xs leading-5 text-slate-500">{task.description}</p>
       )}
 
       {task.tags.length > 0 && (
@@ -51,7 +51,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
           {task.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded"
+              className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500"
             >
               #{tag}
             </span>
