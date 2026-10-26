@@ -23,13 +23,13 @@ export default function Register() {
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="surface grid w-full max-w-4xl overflow-hidden md:grid-cols-2">
         <div className="relative hidden flex-col justify-between overflow-hidden bg-slate-900 p-10 text-white md:flex">
-          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-500/30 blur-3xl" />
+          <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-brand-500/30 blur-3xl" />
           <Link to="/" className="relative flex items-center gap-2.5 text-xl font-bold tracking-tight">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500 text-sm">D</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-sm">D</span>
             DevFlow
           </Link>
           <div className="relative">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-violet-300">Your work, in rhythm</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-300">Your work, in rhythm</p>
             <h2 className="text-4xl font-semibold leading-tight">Build a routine<br />that works for you.</h2>
             <p className="mt-4 max-w-xs text-sm leading-6 text-slate-300">Bring your daily plan into focus and celebrate every bit of progress.</p>
           </div>
@@ -37,7 +37,7 @@ export default function Register() {
         </div>
         <form onSubmit={handleSubmit} className="space-y-5 p-7 sm:p-10">
           <div className="mb-8 md:mb-10">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-600">Get started</p>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Get started</p>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create your account</h1>
             <p className="mt-2 text-sm text-slate-500">Set up your space and get in the flow.</p>
           </div>
@@ -83,7 +83,7 @@ export default function Register() {
             {register.isPending ? "Creating..." : "Create account"}
           </button>
           <p className="pt-2 text-center text-sm text-slate-500">
-            Already have an account? <Link to="/login" className="font-semibold text-violet-700 hover:text-violet-800">Log in</Link>
+            Already have an account? <Link to="/login" className="font-semibold text-brand-700 hover:text-brand-800">Log in</Link>
           </p>
         </form>
       </div>

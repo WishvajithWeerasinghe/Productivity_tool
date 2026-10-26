@@ -8,7 +8,7 @@ export default function AppHeader() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition ${
       isActive
-        ? "bg-violet-50 text-violet-700"
+        ? "bg-brand-50 text-brand-700"
         : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
     }`;
 
@@ -16,7 +16,7 @@ export default function AppHeader() {
     <header className="mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-slate-200/70 pb-5 lg:flex lg:flex-wrap lg:justify-between">
       <div className="contents lg:flex lg:flex-wrap lg:items-center lg:gap-8">
         <NavLink to="/" className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-slate-900">
-          <img src={logo} alt="" className="h-9 w-9 rounded-xl object-contain shadow-md shadow-violet-200" />
+          <img src={logo} alt="" className="h-9 w-9 rounded-xl object-contain shadow-md shadow-brand-200" />
           DevFlow
         </NavLink>
         <nav aria-label="Main navigation" className="order-3 col-span-2 flex flex-wrap items-center gap-1 lg:order-none">

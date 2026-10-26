@@ -38,3 +38,24 @@ export function useCreateMeetingNote() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["meeting-notes"] }),
   });
 }
+
+export function useUpdateMeetingNote() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: CreateMeetingNote }) => {
+      const { data } = await api.put<{ note: MeetingNote }>(`/meeting-notes/${id}`, payload);
+      return data.note;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["meeting-notes"] }),
+  });
+}
+
+export function useDeleteMeetingNote() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/meeting-notes/${id}`);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["meeting-notes"] }),
+  });
+}

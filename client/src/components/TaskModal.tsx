@@ -63,7 +63,7 @@ export default function TaskModal({
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="surface w-full max-w-md space-y-4 border-white p-6 shadow-2xl"
+        className="solid-surface surface w-full max-w-md space-y-4 border-white p-6 shadow-2xl"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-900">{mode === "create" ? "New task" : "Edit task"}</h2>

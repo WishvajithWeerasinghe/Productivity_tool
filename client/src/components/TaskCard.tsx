@@ -31,7 +31,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="cursor-grab rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md active:cursor-grabbing active:translate-y-0"
+      className="cursor-grab rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md active:cursor-grabbing active:translate-y-0"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <p className="text-sm font-semibold leading-snug text-slate-800">{task.title}</p>

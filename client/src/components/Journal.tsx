@@ -47,7 +47,7 @@ export default function Journal({ date, entries, isLoading, isError, isFormOpen,
           <h2 id="journal-day-heading" className="text-lg font-bold text-slate-800">
             {date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">Your thoughts, progress, and reflections for this day.</p>
+          <p className="mt-1 text-sm text-slate-500">Your thoughts, progress, and reflections for the day.</p>
         </div>
         {!isFormOpen && (
           <button type="button" onClick={onAddEntry} className="button-primary px-4 py-2.5 text-sm">Add journal</button>
@@ -65,7 +65,7 @@ export default function Journal({ date, entries, isLoading, isError, isFormOpen,
             </div>
           ) : entries.length === 0 ? (
             <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-5 py-10 text-center">
-              <p className="font-semibold text-slate-700">No journals for this date yet</p>
+              <p className="font-semibold text-slate-700">No journals for this date</p>
               <p className="mt-2 text-sm text-slate-500">Add an entry to capture what happened that day.</p>
             </div>
           ) : (
@@ -78,7 +78,7 @@ export default function Journal({ date, entries, isLoading, isError, isFormOpen,
         </div>
 
         {isFormOpen && (
-          <form onSubmit={handleSave} className="min-w-0 rounded-xl border border-violet-100 bg-violet-50/30 p-5">
+          <form onSubmit={handleSave} className="min-w-0 rounded-xl border border-brand-100 bg-brand-50/30 p-5">
             <label htmlFor="journal-content" className="mb-3 block font-semibold text-slate-800">New journal entry</label>
             <textarea
               ref={textareaRef}

@@ -13,7 +13,9 @@ type DesktopPermission = NotificationPermission | "unsupported";
 interface NotificationContextValue {
   notify: (notification: AppNotification) => void;
   desktopPermission: DesktopPermission;
+  desktopAlertsEnabled: boolean;
   enableDesktopAlerts: () => Promise<void>;
+  setDesktopAlertsEnabled: (enabled: boolean) => void;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
@@ -22,9 +24,14 @@ function getDesktopPermission(): DesktopPermission {
   return typeof Notification !== "undefined" && window.isSecureContext ? Notification.permission : "unsupported";
 }
 
+function getDesktopAlertsEnabled() {
+  return window.localStorage.getItem("desktop-alerts-enabled") !== "false";
+}
+
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [desktopPermission, setDesktopPermission] = useState(getDesktopPermission);
+  const [desktopAlertsEnabled, setDesktopAlertsEnabledState] = useState(getDesktopAlertsEnabled);
   const desktopNotifications = useRef(new Map<string, Notification>());
   const navigate = useNavigate();
 
@@ -47,7 +54,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const notify = useCallback((notification: AppNotification) => {
     setNotifications((current) => current.some((item) => item.id === notification.id) ? current : [...current, notification]);
-    if (getDesktopPermission() !== "granted" || document.visibilityState === "visible") return;
+    if (!desktopAlertsEnabled || getDesktopPermission() !== "granted" || document.visibilityState === "visible") return;
     try {
       const desktop = new Notification(notification.title, { body: notification.message, tag: notification.id, icon: logo });
       desktopNotifications.current.set(notification.id, desktop);
@@ -60,7 +67,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } catch {
       // The in-app popup remains available if system notifications are unsupported.
     }
-  }, [navigate, dismiss]);
+  }, [desktopAlertsEnabled, navigate, dismiss]);
 
   async function enableDesktopAlerts() {
     if (getDesktopPermission() !== "default") return;
@@ -71,20 +78,25 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function setDesktopAlertsEnabled(enabled: boolean) {
+    setDesktopAlertsEnabledState(enabled);
+    window.localStorage.setItem("desktop-alerts-enabled", String(enabled));
+  }
+
   return (
-    <NotificationContext.Provider value={{ notify, desktopPermission, enableDesktopAlerts }}>
+    <NotificationContext.Provider value={{ notify, desktopPermission, desktopAlertsEnabled, enableDesktopAlerts, setDesktopAlertsEnabled }}>
       {children}
       <div aria-label="Notifications" className="pointer-events-none fixed bottom-4 right-4 z-[70] flex max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-sm flex-col gap-3 overflow-y-auto">
         {notifications.map((notification) => (
-          <article key={notification.id} role="alert" className="pointer-events-auto rounded-2xl border border-violet-200 bg-white p-5 shadow-xl shadow-slate-900/10">
+          <article key={notification.id} role="alert" className="pointer-events-auto rounded-2xl border border-brand-200 bg-white p-5 shadow-xl shadow-slate-900/10">
             <div className="flex items-start gap-3">
-              <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" /></svg>
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="font-bold text-slate-900">{notification.title}</h2>
                 <p className="mt-1 break-words text-sm leading-6 text-slate-600">{notification.message}</p>
-                <Link to={notification.href} onClick={() => dismiss(notification.id)} className="mt-3 inline-block text-sm font-semibold text-violet-700 hover:text-violet-900">View details</Link>
+                <Link to={notification.href} onClick={() => dismiss(notification.id)} className="mt-3 inline-block text-sm font-semibold text-brand-700 hover:text-brand-900">View details</Link>
               </div>
               <button type="button" onClick={() => dismiss(notification.id)} aria-label={`Dismiss ${notification.title}`} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4"><path d="m6 6 12 12M6 18 18 6" /></svg>

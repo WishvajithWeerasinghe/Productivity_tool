@@ -161,7 +161,10 @@ export default function TaskBoard() {
 
   const isSaving = createTask.isPending || updateTask.isPending || deleteTask.isPending;
 
-  const totalTasks = useMemo(() => tasks.length, [tasks]);
+  const totalTasks = useMemo(
+    () => tasks.filter((task) => task.status === "todo" || task.status === "in-progress").length,
+    [tasks]
+  );
 
   if (isLoading) return <p className="py-12 text-center text-sm text-slate-400">Loading tasks…</p>;
 
@@ -170,9 +173,9 @@ export default function TaskBoard() {
       <div className="mb-5 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900">Your task board</h2>
-          <p className="mt-1 text-sm text-slate-500">{totalTasks} {totalTasks === 1 ? "task" : "tasks"} across your workflow</p>
+          <p className="mt-1 text-sm text-slate-500">{totalTasks} {totalTasks === 1 ? "task" : "tasks"}</p>
         </div>
-        <span className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">Board view</span>
+        {/* <span className="rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700">Board view</span> */}
       </div>
 
       <DndContext

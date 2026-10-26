@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import AppHeader from "../components/AppHeader";
 import Journal from "../components/Journal";
 import { useJournalEntries } from "../hooks/useJournal";
@@ -7,12 +7,13 @@ import { getCalendarDays, getDateKey } from "../utils/journalCalendar";
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const navigationClass = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500";
+const navigationClass = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500";
 
 export default function JournalPage() {
   const { data: entries = [], isLoading, isError, refetch } = useJournalEntries();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [visibleMonth, setVisibleMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [jumpYear, setJumpYear] = useState(() => new Date().getFullYear());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
   const todayKey = getDateKey(new Date());
@@ -33,6 +34,7 @@ export default function JournalPage() {
   function selectDate(date: Date) {
     setSelectedDate(date);
     setVisibleMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+    setJumpYear(date.getFullYear());
     detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -40,11 +42,13 @@ export default function JournalPage() {
     const today = new Date();
     setSelectedDate(today);
     setVisibleMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+    setJumpYear(today.getFullYear());
   }
 
   function goToMonth(month: Date) {
     const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
     setVisibleMonth(month);
+    setJumpYear(month.getFullYear());
     setSelectedDate(new Date(month.getFullYear(), month.getMonth(), Math.min(selectedDate.getDate(), lastDay), 12));
   }
 
@@ -52,14 +56,15 @@ export default function JournalPage() {
     goToMonth(new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1));
   }
 
-  function handleMonthJump(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const year = Number(form.get("year"));
-    const month = Number(form.get("month"));
-    if (!Number.isInteger(year) || year < 1900 || year > 9999 || !Number.isInteger(month) || month < 0 || month > 11) return;
+  function handleMonthChange(month: number) {
+    goToMonth(new Date(jumpYear, month, 1));
+  }
 
-    goToMonth(new Date(year, month, 1));
+  function handleYearChange(year: number) {
+    setJumpYear(year);
+    if (Number.isInteger(year) && year >= 1900 && year <= 9999) {
+      goToMonth(new Date(year, visibleMonth.getMonth(), 1));
+    }
   }
 
   function addEntry() {
@@ -74,7 +79,7 @@ export default function JournalPage() {
       <section aria-labelledby="journal-heading" className="surface mb-5 p-4 sm:p-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-600">Your workspace</p>
+            {/*<p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-600">workspace</p>*/}
             <h1 id="journal-heading" className="text-2xl font-bold tracking-tight text-slate-900">Dev journal</h1>
             <p className="mt-1 text-sm text-slate-500">
               {isLoading ? "Loading your journals..." : isError ? "Your journals could not be loaded." : "Select a date to write or read your journals."}
@@ -96,20 +101,19 @@ export default function JournalPage() {
           <h2 id="journal-month-heading" aria-live="polite" className="text-sm font-semibold text-slate-600">
             {visibleMonth.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
           </h2>
-          <form key={visibleMonth.getTime()} onSubmit={handleMonthJump} aria-label="Jump to month and year" className="flex flex-wrap items-center gap-2">
+          <div aria-label="Jump to month and year" className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-slate-500">Jump to</span>
             <label>
               <span className="sr-only">Month</span>
-              <select name="month" defaultValue={visibleMonth.getMonth()} className="field px-2 py-2 text-sm">
+              <select value={visibleMonth.getMonth()} onChange={(event) => handleMonthChange(Number(event.target.value))} className="field px-2 py-2 text-sm">
                 {months.map((month, index) => <option key={month} value={index}>{month}</option>)}
               </select>
             </label>
             <label>
               <span className="sr-only">Year</span>
-              <input name="year" type="number" min={1900} max={9999} step={1} required defaultValue={visibleMonth.getFullYear()} className="field w-24 px-2 py-2 text-sm" />
+              <input value={jumpYear} onChange={(event) => handleYearChange(Number(event.target.value))} type="number" min={1900} max={9999} step={1} required className="field w-24 px-2 py-2 text-sm" />
             </label>
-            <button type="submit" className="button-primary px-3 py-2 text-sm">Go</button>
-          </form>
+          </div>
         </div>
         <table aria-labelledby="journal-month-heading" className="w-full table-fixed border-collapse">
           <thead>
@@ -140,8 +144,8 @@ export default function JournalPage() {
                         aria-pressed={isSelected}
                         aria-current={isToday ? "date" : undefined}
                         aria-label={`${day.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}, ${isLoading || isError ? "journals unavailable" : dayEntries.length > 0 ? "has journals" : "no journals"}`}
-                        className={`relative flex h-20 w-full flex-col items-start overflow-hidden p-1.5 text-left transition focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600 sm:h-24 sm:p-2.5 lg:h-28 ${
-                          isSelected ? "bg-violet-50 ring-2 ring-inset ring-violet-400" : isToday ? "bg-amber-50 hover:bg-amber-100/70" : !isCurrentMonth ? "bg-stone-50/70 hover:bg-stone-100" : "bg-white hover:bg-slate-50"
+                        className={`relative flex h-20 w-full flex-col items-start overflow-hidden p-1.5 text-left transition focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 sm:h-24 sm:p-2.5 lg:h-28 ${
+                          isSelected ? "bg-brand-50 ring-2 ring-inset ring-brand-400" : isToday ? "bg-amber-50 hover:bg-amber-100/70" : !isCurrentMonth ? "bg-stone-50/70 hover:bg-stone-100" : "bg-white hover:bg-slate-50"
                         }`}
                       >
                         <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${isToday ? "bg-amber-300 text-amber-950" : isCurrentMonth ? "text-slate-700" : "text-slate-400"}`}>
@@ -149,7 +153,7 @@ export default function JournalPage() {
                         </span>
                         {dayEntries.length > 0 && (
                           <>
-                            <span aria-hidden="true" className="ml-2 mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-400" />
+                            <span aria-hidden="true" className="ml-2 mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-400" />
                             <span className="mt-1 hidden w-full truncate text-xs text-slate-500 sm:block">{dayEntries[0].content}</span>
                           </>
                         )}
@@ -163,7 +167,7 @@ export default function JournalPage() {
         </table>
         <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-300" />Today</span>
-          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-violet-400" />Has journals</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-brand-400" />Has journals</span>
         </div>
       </section>
 

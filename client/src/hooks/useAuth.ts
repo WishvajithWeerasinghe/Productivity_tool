@@ -42,3 +42,14 @@ export function useLogout() {
     onSuccess: () => queryClient.setQueryData(["me"], null),
   });
 }
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { name: string }) => {
+      const { data } = await api.patch<{ user: User }>("/auth/profile", payload);
+      return data.user;
+    },
+    onSuccess: (user) => queryClient.setQueryData(["me"], user),
+  });
+}

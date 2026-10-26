@@ -4,6 +4,11 @@ export interface User {
   email: string;
 }
 
+export interface UserProfile {
+  name: string;
+  email: string;
+}
+
 export type TaskStatus = "todo" | "in-progress" | "done";
 export type TaskPriority = "low" | "medium" | "high";
 

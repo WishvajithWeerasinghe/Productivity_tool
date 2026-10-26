@@ -6,6 +6,7 @@ import MeetingNotes from "./pages/MeetingNotes";
 import JournalPage from "./pages/JournalPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import WorkspaceLayout from "./components/WorkspaceLayout";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/journal" element={<JournalPage />} />
         <Route path="/meeting-notes" element={<MeetingNotes />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
     </Routes>
   );

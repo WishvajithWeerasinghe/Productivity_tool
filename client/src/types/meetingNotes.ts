@@ -3,8 +3,7 @@ export interface MeetingNote {
   title: string;
   meetingDate: string;
   meetingTime?: string;
-  department: string;
-  participants: string[];
+  meetingLink: string;
   meetingType: string;
   notes: string;
   createdAt: string;

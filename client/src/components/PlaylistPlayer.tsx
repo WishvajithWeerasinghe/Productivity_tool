@@ -48,7 +48,6 @@ export default function PlaylistPlayer({ userId }: { userId: string }) {
     <section aria-labelledby="focus-music-heading" className="surface min-w-0 p-5">
       <div className="mb-4">
         <h2 id="focus-music-heading" className="font-bold text-slate-800">Focus music</h2>
-        <p className="mt-1 text-xs leading-5 text-slate-500">A playlist to keep you company while you focus.</p>
       </div>
 
       <form onSubmit={loadPlaylist} className="space-y-3">
@@ -64,7 +63,7 @@ export default function PlaylistPlayer({ userId }: { userId: string }) {
           aria-describedby={error ? "focus-playlist-help focus-playlist-error" : "focus-playlist-help"}
           className="field w-full px-3 py-2.5 text-sm"
         />
-        <p id="focus-playlist-help" className="text-xs leading-5 text-slate-500">Load your playlist, then press Play in the player.</p>
+        <p id="focus-playlist-help" className="text-xs leading-5 text-slate-500">Load your playlist, then press Play.</p>
         {error && <p id="focus-playlist-error" role="alert" className="text-xs leading-5 text-rose-600">{error}</p>}
         <div className="flex flex-wrap items-center gap-2">
           <button type="submit" disabled={!link.trim()} className="button-primary px-4 py-2 text-sm">
@@ -90,7 +89,7 @@ export default function PlaylistPlayer({ userId }: { userId: string }) {
             loading="lazy"
             className="block w-full rounded-xl border-0 bg-slate-50"
           />
-          <a href={playlist.url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-violet-700 hover:text-violet-900">
+          <a href={playlist.url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs font-semibold text-brand-700 hover:text-brand-900">
             Open playlist in {playlist.provider} ↗
           </a>
         </div>

@@ -7,6 +7,7 @@ interface FocusSessionContextValue {
   durationMinutes: number;
   secondsLeft: number;
   running: boolean;
+  durationLocked: boolean;
   saveError: boolean;
   start: () => void;
   pause: () => void;
@@ -94,14 +95,14 @@ export function FocusSessionProvider({ children }: { children: ReactNode }) {
   }
 
   function setDuration(minutes: number) {
-    if (running || !Number.isInteger(minutes) || minutes < 1 || minutes > 180) return;
+    if (running || startTimeRef.current !== null || !Number.isInteger(minutes) || minutes < 1 || minutes > 180) return;
     reset();
     setDurationMinutes(minutes);
     setSecondsLeft(minutes * 60);
   }
 
   return (
-    <FocusSessionContext.Provider value={{ durationMinutes, secondsLeft, running, saveError, start, pause, reset, setDuration }}>
+    <FocusSessionContext.Provider value={{ durationMinutes, secondsLeft, running, durationLocked: startTimeRef.current !== null, saveError, start, pause, reset, setDuration }}>
       {children}
     </FocusSessionContext.Provider>
   );

@@ -17,7 +17,7 @@ export default function MeetingTimeEditor({ meeting }: { meeting: MeetingNote })
     return (
       <div className="mt-1 text-xs">
         <p className="text-slate-500">{meeting.meetingTime ? `${meeting.meetingTime} (local)` : "Time not set"}</p>
-        <button type="button" aria-label={`${meeting.meetingTime ? "Change" : "Set"} time for ${meeting.title}`} onClick={() => { setTime(meeting.meetingTime ?? ""); updateTime.reset(); setIsEditing(true); }} className="mt-1 font-semibold text-violet-700 hover:text-violet-900">
+        <button type="button" aria-label={`${meeting.meetingTime ? "Change" : "Set"} time for ${meeting.title}`} onClick={() => { setTime(meeting.meetingTime ?? ""); updateTime.reset(); setIsEditing(true); }} className="mt-1 font-semibold text-brand-700 hover:text-brand-900">
           {meeting.meetingTime ? "Change time" : "Set time"}
         </button>
       </div>

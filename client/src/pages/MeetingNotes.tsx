@@ -1,8 +1,15 @@
 import { FormEvent, useState } from "react";
 import AppHeader from "../components/AppHeader";
+import MeetingNoteModal from "../components/MeetingNoteModal";
 import MeetingTimeEditor from "../components/MeetingTimeEditor";
 import { useCurrentUser } from "../hooks/useAuth";
-import { useCreateMeetingNote, useMeetingNotes } from "../hooks/useMeetingNotes";
+import {
+  useCreateMeetingNote,
+  useDeleteMeetingNote,
+  useMeetingNotes,
+  useUpdateMeetingNote,
+} from "../hooks/useMeetingNotes";
+import { CreateMeetingNote, MeetingNote } from "../types/meetingNotes";
 
 const meetingTypes = [
   "Strategy Meeting",
@@ -36,20 +43,22 @@ export default function MeetingNotes() {
   const { data: user } = useCurrentUser();
   const { data: notes = [], isLoading, isError } = useMeetingNotes();
   const createNote = useCreateMeetingNote();
+  const updateNote = useUpdateMeetingNote();
+  const deleteNote = useDeleteMeetingNote();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingNote | null>(null);
   const [search, setSearch] = useState("");
   const [title, setTitle] = useState("");
   const [meetingDate, setMeetingDate] = useState(
     getTodayDate
   );
-  const [department, setDepartment] = useState("");
   const [meetingTime, setMeetingTime] = useState("");
-  const [participants, setParticipants] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
   const [meetingType, setMeetingType] = useState(meetingTypes[0]);
   const [meetingContent, setMeetingContent] = useState("");
 
   const filteredNotes = notes.filter((note) =>
-    [note.title, note.department, note.meetingType, ...note.participants]
+    [note.title, note.meetingType, note.meetingLink]
       .join(" ")
       .toLowerCase()
       .includes(search.trim().toLowerCase())
@@ -59,8 +68,7 @@ export default function MeetingNotes() {
     setTitle("");
     setMeetingDate(getTodayDate());
     setMeetingTime("");
-    setDepartment("");
-    setParticipants("");
+    setMeetingLink("");
     setMeetingType(meetingTypes[0]);
     setMeetingContent("");
   }
@@ -72,11 +80,7 @@ export default function MeetingNotes() {
         title: title.trim(),
         meetingDate,
         meetingTime,
-        department: department.trim(),
-        participants: participants
-          .split(",")
-          .map((participant) => participant.trim())
-          .filter(Boolean),
+        meetingLink: meetingLink.trim(),
         meetingType,
         notes: meetingContent.trim(),
       },
@@ -89,6 +93,21 @@ export default function MeetingNotes() {
     );
   }
 
+  function handleUpdate(payload: CreateMeetingNote) {
+    if (!selectedMeeting) return;
+    updateNote.mutate(
+      { id: selectedMeeting._id, payload },
+      { onSuccess: () => setSelectedMeeting(null) }
+    );
+  }
+
+  function handleDelete() {
+    if (!selectedMeeting || !window.confirm(`Delete "${selectedMeeting.title}"?`)) return;
+    deleteNote.mutate(selectedMeeting._id, {
+      onSuccess: () => setSelectedMeeting(null),
+    });
+  }
+
   return (
     <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
       <AppHeader />
@@ -97,9 +116,9 @@ export default function MeetingNotes() {
         <div className="border-b border-slate-100 px-5 py-6 sm:px-7">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
+              {/*<p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-600">
                 Workspace
-              </p>
+              </p>*/}
               <h1 className="text-2xl font-bold tracking-tight text-slate-900">Meeting notes</h1>
               <p className="mt-1 text-sm text-slate-500">
                 Keep decisions, attendees, and follow-ups in one place.
@@ -170,22 +189,13 @@ export default function MeetingNotes() {
                     ))}
                   </select>
                 </label>
-                <label className="text-sm font-medium text-slate-700">
-                  Department
+                <label className="text-sm font-medium text-slate-700 sm:col-span-2 lg:col-span-3">
+                  Meeting link
                   <input
-                    maxLength={80}
-                    value={department}
-                    onChange={(event) => setDepartment(event.target.value)}
-                    placeholder="e.g. Engineering"
-                    className={inputClassName}
-                  />
-                </label>
-                <label className="text-sm font-medium text-slate-700 sm:col-span-2">
-                  Participants
-                  <input
-                    value={participants}
-                    onChange={(event) => setParticipants(event.target.value)}
-                    placeholder="Separate names with commas"
+                    type="url"
+                    value={meetingLink}
+                    onChange={(event) => setMeetingLink(event.target.value)}
+                    placeholder="https://meet.google.com/..."
                     className={inputClassName}
                   />
                 </label>
@@ -233,7 +243,7 @@ export default function MeetingNotes() {
 
         <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <div className="flex items-center gap-2 text-sm">
-            <span className="rounded-lg bg-violet-50 px-3 py-1.5 font-semibold text-violet-700">
+            <span className="rounded-lg bg-brand-50 px-3 py-1.5 font-semibold text-brand-700">
               Table
             </span>
             <span className="px-2 text-slate-500">
@@ -270,7 +280,7 @@ export default function MeetingNotes() {
             </p>
             <p className="mt-1 text-sm text-slate-500">
               {search
-                ? "Try another name, department, meeting type, or participant."
+                ? "Try another name, meeting type, or meeting link."
                 : "Create your first meeting note to keep the important details together."}
             </p>
           </div>
@@ -281,8 +291,7 @@ export default function MeetingNotes() {
                 <tr>
                   <th scope="col" className="px-5 py-3 font-medium sm:px-7">Name</th>
                   <th scope="col" className="px-4 py-3 font-medium">Meeting date</th>
-                  <th scope="col" className="px-4 py-3 font-medium">Department</th>
-                  <th scope="col" className="px-4 py-3 font-medium">Participants</th>
+                  <th scope="col" className="px-4 py-3 font-medium">Meeting link</th>
                   <th scope="col" className="px-4 py-3 font-medium">Meeting type</th>
                   <th scope="col" className="px-4 py-3 font-medium">Created</th>
                   <th scope="col" className="px-4 py-3 font-medium">Created by</th>
@@ -291,28 +300,35 @@ export default function MeetingNotes() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredNotes.map((note) => (
-                  <tr key={note._id} className="align-top transition hover:bg-violet-50/40">
+                  <tr key={note._id} className="align-top transition hover:bg-brand-50/40">
                     <td className="max-w-64 px-5 py-4 font-semibold text-slate-800 sm:px-7">
-                      {note.title}
+                      <p>{note.title}</p>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedMeeting(note)}
+                        className="mt-2 text-xs font-semibold text-brand-600 hover:text-brand-800"
+                      >
+                        View details
+                      </button>
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-slate-600">
                       {formatDate(note.meetingDate)}
                       <MeetingTimeEditor meeting={note} />
                     </td>
                     <td className="px-4 py-4">
-                      {note.department ? (
-                        <span className="rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700">
-                          {note.department}
-                        </span>
+                      {note.meetingLink ? (
+                        <a
+                          href={note.meetingLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="button-primary inline-flex whitespace-nowrap px-3 py-1.5 text-xs"
+                        >
+                          Open link
+                        </a>
                       ) : <span className="text-slate-300">—</span>}
                     </td>
-                    <td className="max-w-56 px-4 py-4 text-slate-600">
-                      {note.participants.length
-                        ? note.participants.join(", ")
-                        : <span className="text-slate-300">—</span>}
-                    </td>
                     <td className="px-4 py-4">
-                      <span className="whitespace-nowrap rounded-md bg-violet-50 px-2 py-1 text-xs font-medium text-violet-700">
+                      <span className="whitespace-nowrap rounded-md bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700">
                         {note.meetingType}
                       </span>
                     </td>
@@ -328,7 +344,7 @@ export default function MeetingNotes() {
                     </td>
                     <td className="max-w-72 px-5 py-4 text-slate-500 sm:px-7">
                       <details className="group">
-                        <summary className="cursor-pointer list-none font-medium text-violet-700 hover:text-violet-900">
+                        <summary className="cursor-pointer list-none font-medium text-brand-600 hover:text-brand-800">
                           View notes
                         </summary>
                         <p className="mt-2 whitespace-pre-wrap break-words text-xs leading-5 text-slate-600">
@@ -343,6 +359,19 @@ export default function MeetingNotes() {
           </div>
         )}
       </section>
+      {selectedMeeting && (
+        <MeetingNoteModal
+          meeting={selectedMeeting}
+          onClose={() => {
+            if (!updateNote.isPending && !deleteNote.isPending) setSelectedMeeting(null);
+          }}
+          onSave={handleUpdate}
+          onDelete={handleDelete}
+          saving={updateNote.isPending}
+          deleting={deleteNote.isPending}
+          error={updateNote.isError || deleteNote.isError}
+        />
+      )}
     </main>
   );
 }

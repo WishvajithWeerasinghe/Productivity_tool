@@ -63,6 +63,24 @@ export function logout(_req: Request, res: Response) {
   res.json({ message: "Logged out" });
 }
 
+export async function updateProfile(req: AuthRequest, res: Response) {
+  const { name } = req.body ?? {};
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({ message: "name is required" });
+  }
+  if (name.trim().length > 80) {
+    return res.status(400).json({ message: "name must be 80 characters or fewer" });
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.userId,
+    { $set: { name: name.trim() } },
+    { new: true, runValidators: true }
+  );
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json({ user: { id: user.id, name: user.name, email: user.email } });
+}
+
 export async function me(req: AuthRequest, res: Response) {
   const user = await User.findById(req.userId);
   if (!user) return res.status(404).json({ message: "User not found" });

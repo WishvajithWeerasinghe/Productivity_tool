@@ -18,7 +18,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(ellipse at 85% 0%, rgba(222, 218, 255, 0.3), transparent 32rem),
+    radial-gradient(ellipse at 85% 0%, rgba(191, 219, 254, 0.3), transparent 32rem),
     #f5f6fb;
   color: #20243a;
 }
@@ -35,8 +35,8 @@ button {
 }
 
 ::selection {
-  color: #322276;
-  background: #e4dfff;
+  color: #0f3b7c;
+  background: #dbeafe;
 }
 
 .surface {
@@ -44,6 +44,51 @@ button {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 8px 24px rgba(37, 42, 73, 0.045);
+}
+
+.workspace-background .surface,
+.workspace-background .glass-panel {
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
+.workspace-background .glass-control {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+.workspace-background .glass-panel .bg-white,
+.workspace-background .glass-panel .bg-slate-50,
+.workspace-background .glass-panel .bg-slate-50\/80,
+.workspace-background .glass-panel .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.34);
+}
+
+.workspace-background .field {
+  border-color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.38);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.workspace-background .solid-surface {
+  border-color: #e9eaf2;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(37, 42, 73, 0.045);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.workspace-background .solid-surface .field {
+  border-color: #e3e5ee;
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .field {
@@ -59,22 +104,22 @@ button {
 }
 
 .field:focus {
-  border-color: #8c7cf0;
+  border-color: #1868DB;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(124, 105, 237, 0.14);
+  box-shadow: 0 0 0 3px rgba(24, 104, 219, 0.14);
 }
 
 .button-primary {
   border-radius: 10px;
-  background: #6f5ce7;
+  background: #1868DB;
   color: #fff;
   font-weight: 600;
   transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 .button-primary:hover {
-  background: #5f4bd6;
-  box-shadow: 0 6px 14px rgba(111, 92, 231, 0.2);
+  background: #1557b8;
+  box-shadow: 0 6px 14px rgba(24, 104, 219, 0.2);
 }
 
 .button-primary:active {

@@ -26,7 +26,7 @@ export default function TaskColumn({
     <div
       ref={setNodeRef}
       className={`flex max-h-[70vh] min-h-[340px] flex-col rounded-xl border p-3 transition-colors ${
-        isOver ? "border-violet-300 bg-violet-50/70" : "border-slate-100 bg-slate-50/80"
+        isOver ? "border-brand-300 bg-brand-50/70" : "border-slate-100 bg-slate-50/80"
       }`}
     >
       <div className="flex items-center justify-between mb-3 px-1">
@@ -40,7 +40,7 @@ export default function TaskColumn({
         <button
           onClick={onAddTask}
           title="Add task"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-lg leading-none text-slate-400 transition hover:bg-white hover:text-violet-700 hover:shadow-sm"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-lg leading-none text-slate-400 transition hover:bg-white hover:text-brand-700 hover:shadow-sm"
         >
           +
         </button>
